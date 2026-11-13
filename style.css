@@ -70,7 +70,10 @@ html, body { margin: 0; height: 100%; background: #000; color: #fff;
 .saved { margin: 6px 16px 0; font-size: 12px; color: #6fcf97; height: 1em; }
 .spacer { width: 56px; height: 56px; }
 
-#gallery-view h1 { flex: 1; }
+#gallery-view header { display: grid; grid-template-columns: 1fr auto 1fr; }
+#gallery-view header .pill:first-child { justify-self: start; }
+#gallery-view header .pill:last-child { justify-self: end; }
+#gallery-view h1 { text-align: center; }
 #map-view { position: fixed; inset: 0; background: #0b0b0b; display: flex; flex-direction: column; }
 #map-view header { display: flex; align-items: center; gap: 12px; padding: calc(10px + var(--safe-t)) 12px 10px; background: #0b0b0b; z-index: 1000; }
 #map-view h1 { font-size: 18px; margin: 0; flex: 1; }
@@ -79,8 +82,8 @@ html, body { margin: 0; height: 100%; background: #000; color: #fff;
 .pin { background: none; border: 0; }
 .pin img { width: 48px !important; height: 48px !important; object-fit: cover; display: block; border: 3px solid #fff; border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,.5); background: #333; }
-.cluster { position: relative; }
-.cluster img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; border: 3px solid #fff;
+.cluster { position: relative; width: 52px; height: 52px; }
+.cluster img { width: 52px !important; height: 52px !important; object-fit: cover; display: block; border: 3px solid #fff;
   border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.5); }
 .cluster b { position: absolute; top: -8px; right: -8px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
   background: #ff3b5c; color: #fff; font-size: 12px; line-height: 22px; text-align: center; border: 2px solid #fff; }
