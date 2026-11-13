@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>November Memories</title>
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
   <main id="camera-view">
     <video id="video" autoplay playsinline muted></video>
+    <h2 id="camera-title">memory</h2>
     <div id="flash"></div>
 
     <div id="message" class="message hidden">
@@ -39,7 +40,7 @@
 
   <section id="map-view" class="hidden">
     <header>
-      <button id="map-back" class="pill">← Gallery</button>
+      <button id="map-back" class="pill" aria-label="Gallery">🌆</button>
       <h1>Map</h1>
       <span id="map-info"></span>
     </header>
@@ -62,20 +63,20 @@
     <textarea id="note" rows="6" placeholder="Write a note about this photo…"></textarea>
   </section>
 
-  <!-- Bump ?v= on everything below when you deploy (sed -i 's/?v=[0-9]*/?v=NN/g' index.html) -->
+  <!-- Bump ?v=25 on everything below when you deploy (sed -i 's/?v=25[0-9]*/?v=25NN/g' index.html) -->
   <script type="importmap">
   { "imports": {
-    "util": "./js/util.js?v=24",
-    "nav": "./js/nav.js?v=24",
-    "db": "./js/db.js?v=24",
-    "geo": "./js/geo.js?v=24",
-    "camera": "./js/camera.js?v=24",
-    "leaflet-loader": "./js/leaflet-loader.js?v=24",
-    "gallery": "./js/gallery.js?v=24",
-    "detail": "./js/detail.js?v=24",
-    "map": "./js/map.js?v=24"
+    "util": "./js/util.js?v=25",
+    "nav": "./js/nav.js?v=25",
+    "db": "./js/db.js?v=25",
+    "geo": "./js/geo.js?v=25",
+    "camera": "./js/camera.js?v=25",
+    "leaflet-loader": "./js/leaflet-loader.js?v=25",
+    "gallery": "./js/gallery.js?v=25",
+    "detail": "./js/detail.js?v=25",
+    "map": "./js/map.js?v=25"
   } }
   </script>
-  <script type="module" src="./js/main.js?v=24"></script>
+  <script type="module" src="./js/main.js?v=25"></script>
 </body>
 </html>
