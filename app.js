@@ -60,7 +60,9 @@ function showMessage(text, showBtn = true) {
   $('start-btn').classList.toggle('hidden', !showBtn);
   $('message').classList.remove('hidden');
 }
-async function startCamera() {
+let starting = null;
+function startCamera() { return (starting ||= openCamera().finally(() => { starting = null; })); }
+async function openCamera() {
   stopCamera();
   try {
     stream = await navigator.mediaDevices.getUserMedia({
@@ -114,6 +116,7 @@ async function refreshThumb() {
 let galleryUrls = [];
 async function openGallery() {
   stopCamera();
+  ensureLeaflet().catch(() => {}); // warm up the map while browsing, off the camera's critical path
   $('camera-view').classList.add('hidden'); $('map-view').classList.add('hidden'); $('detail-view').classList.add('hidden'); $('gallery-view').classList.remove('hidden');
   galleryUrls.forEach(URL.revokeObjectURL); galleryUrls = [];
   const photos = (await allPhotos()).reverse();
@@ -163,11 +166,27 @@ $('detail-delete').onclick = async () => {
   clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); detailFrom === 'map' ? openMap() : openGallery();
 };
 
+const CDN = 'https://cdnjs.cloudflare.com/ajax/libs/';
+let leafletReady = null;
+function ensureLeaflet() { // loaded on demand so the camera never waits on map code
+  return (leafletReady ||= (async () => {
+    for (const href of ['leaflet/1.9.4/leaflet.min.css', 'leaflet.markercluster/1.5.3/MarkerCluster.css']) {
+      const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CDN + href; document.head.append(l);
+    }
+    for (const src of ['leaflet/1.9.4/leaflet.min.js', 'leaflet.markercluster/1.5.3/leaflet.markercluster.js']) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script'); s.src = CDN + src; s.onload = res; s.onerror = rej; document.head.append(s);
+      });
+    }
+  })().catch((e) => { leafletReady = null; throw e; }));
+}
+
 let map = null, cluster = null, mapUrls = [];
 async function openMap() {
   stopCamera();
   $('camera-view').classList.add('hidden'); $('gallery-view').classList.add('hidden'); $('detail-view').classList.add('hidden');
   $('map-view').classList.remove('hidden');
+  try { await ensureLeaflet(); } catch { $('map-info').textContent = 'Map needs an internet connection'; return; }
   const photos = await allPhotos();
   const located = photos.filter((p) => p.lat != null);
   $('map-info').textContent = `${located.length} of ${photos.length} located`;
@@ -209,8 +228,11 @@ $('gallery-btn').onclick = openGallery;
 $('back-btn').onclick = closeGallery;
 $('start-btn').onclick = startCamera;
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && !$('camera-view').classList.contains('hidden')) startCamera();
-  else stopCamera();
+  if (document.visibilityState === 'visible') {
+    // only restart if the stream actually died, so tab events never cause a re-open flicker
+    const live = stream?.getTracks().some((t) => t.readyState === 'live');
+    if (!live && !$('camera-view').classList.contains('hidden')) startCamera();
+  } else stopCamera();
 });
 
 refreshThumb();
