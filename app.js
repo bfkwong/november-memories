@@ -85,7 +85,7 @@ async function capture() {
   $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60);
   navigator.vibrate?.(30);
 
-  const scale = Math.min(1, 1600 / Math.max(video.videoWidth, video.videoHeight));
+  const scale = Math.min(1, 1280 / Math.max(video.videoWidth, video.videoHeight));
   const c = document.createElement('canvas');
   c.width = Math.round(video.videoWidth * scale); c.height = Math.round(video.videoHeight * scale);
   c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
