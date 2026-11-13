@@ -170,6 +170,10 @@ async function flushNote() {
 }
 $('note').addEventListener('input', () => { $('saved').innerHTML = '&nbsp;'; clearTimeout(saveTimer); saveTimer = setTimeout(flushNote, 500); });
 $('detail-back').onclick = async () => { await flushNote(); current = null; detailFrom === 'map' ? openMap() : openGallery(); };
+$('detail-delete').onclick = async () => {
+  if (!confirm('Delete this photo?')) return;
+  clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); detailFrom === 'map' ? openMap() : openGallery();
+};
 
 const CDN = 'https://cdnjs.cloudflare.com/ajax/libs/';
 let leafletReady = null;
