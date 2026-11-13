@@ -21,6 +21,10 @@ async function tx(mode, fn) {
 }
 const savePhoto = (rec) => tx('readwrite', (s) => s.add(rec));
 const allPhotos = () => tx('readonly', (s) => s.getAll());
+const updatePhoto = (id, patch) => tx('readwrite', (s) => {
+  const g = s.get(id);
+  g.onsuccess = () => g.result && s.put({ ...g.result, ...patch });
+});
 const deletePhoto = (id) => tx('readwrite', (s) => s.delete(id));
 navigator.storage?.persist?.(); // ask the browser not to evict our data
 
@@ -83,9 +87,10 @@ async function capture() {
   await savePhoto({
     blob, takenAt: Date.now(),
     lat: pos?.coords.latitude ?? null, lng: pos?.coords.longitude ?? null,
-    accuracy: pos?.coords.accuracy ?? null,
+    accuracy: pos?.coords.accuracy ?? null, note: '',
   });
   refreshThumb();
+  openGallery(); // jump to the gallery after every shot
 }
 
 /* ---------- UI ---------- */
@@ -101,7 +106,7 @@ async function refreshThumb() {
 let galleryUrls = [];
 async function openGallery() {
   stopCamera();
-  $('camera-view').classList.add('hidden'); $('gallery-view').classList.remove('hidden');
+  $('camera-view').classList.add('hidden'); $('detail-view').classList.add('hidden'); $('gallery-view').classList.remove('hidden');
   galleryUrls.forEach(URL.revokeObjectURL); galleryUrls = [];
   const photos = (await allPhotos()).reverse();
   $('empty').classList.toggle('hidden', photos.length > 0);
@@ -109,15 +114,39 @@ async function openGallery() {
   for (const p of photos) {
     const url = URL.createObjectURL(p.blob); galleryUrls.push(url);
     const card = document.createElement('div'); card.className = 'card';
-    const loc = p.lat == null ? 'No location'
-      : `<a target="_blank" rel="noopener" href="https://maps.google.com/?q=${p.lat},${p.lng}">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</a>`;
-    card.innerHTML = `<img src="${url}" alt=""><div class="meta"><button>Delete</button>${new Date(p.takenAt).toLocaleString()}<br>${loc}</div>`;
-    card.querySelector('button').onclick = async () => {
-      if (confirm('Delete this photo?')) { await deletePhoto(p.id); card.remove(); refreshThumb(); }
-    };
+    const note = p.note?.trim();
+    const noteEl = document.createElement('div');
+    noteEl.className = 'note' + (note ? '' : ' empty'); noteEl.textContent = note || 'Add a note…';
+    card.innerHTML = `<img src="${url}" alt=""><div class="meta">${new Date(p.takenAt).toLocaleString()}</div>`;
+    card.querySelector('.meta').append(noteEl);
+    card.onclick = () => openDetail(p, url);
     grid.append(card);
   }
 }
+let current = null, saveTimer = null;
+function openDetail(p, url) {
+  current = p;
+  $('detail-img').src = url;
+  const loc = p.lat == null ? 'No location'
+    : `<a target="_blank" rel="noopener" href="https://maps.google.com/?q=${p.lat},${p.lng}">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</a>`;
+  $('detail-meta').innerHTML = `${new Date(p.takenAt).toLocaleString()}<br>${loc}`;
+  $('note').value = p.note || ''; $('saved').innerHTML = '&nbsp;';
+  $('gallery-view').classList.add('hidden'); $('detail-view').classList.remove('hidden');
+}
+async function flushNote() {
+  clearTimeout(saveTimer);
+  if (!current) return;
+  current.note = $('note').value;
+  await updatePhoto(current.id, { note: current.note });
+  $('saved').textContent = 'Saved ✓';
+}
+$('note').addEventListener('input', () => { $('saved').innerHTML = '&nbsp;'; clearTimeout(saveTimer); saveTimer = setTimeout(flushNote, 500); });
+$('detail-back').onclick = async () => { await flushNote(); current = null; openGallery(); };
+$('detail-delete').onclick = async () => {
+  if (!confirm('Delete this photo?')) return;
+  clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); openGallery();
+};
+
 function closeGallery() {
   $('gallery-view').classList.add('hidden'); $('camera-view').classList.remove('hidden'); startCamera();
 }
