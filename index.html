@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>November Memories</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="camera-view">
+    <video id="video" autoplay playsinline muted></video>
+    <div id="flash"></div>
+
+    <div id="gps-badge" class="badge">📍 locating…</div>
+
+    <div id="message" class="message hidden">
+      <p id="message-text"></p>
+      <button id="start-btn" class="pill">Open camera</button>
+    </div>
+
+    <div class="controls">
+      <button id="gallery-btn" class="thumb" aria-label="Open gallery">
+        <img id="last-thumb" alt="">
+        <span id="count"></span>
+      </button>
+      <button id="shutter" aria-label="Take photo"></button>
+      <button id="flip" class="round" aria-label="Switch camera">⟲</button>
+    </div>
+  </main>
+
+  <section id="gallery-view" class="hidden">
+    <header>
+      <button id="back-btn" class="pill">← Camera</button>
+      <h1>Memories</h1>
+    </header>
+    <div id="grid"></div>
+    <p id="empty" class="hidden">No photos yet.</p>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
