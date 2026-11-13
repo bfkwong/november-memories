@@ -114,7 +114,7 @@ async function refreshThumb() {
 let galleryUrls = [];
 async function openGallery() {
   stopCamera();
-  $('camera-view').classList.add('hidden'); $('detail-view').classList.add('hidden'); $('gallery-view').classList.remove('hidden');
+  $('camera-view').classList.add('hidden'); $('map-view').classList.add('hidden'); $('detail-view').classList.add('hidden'); $('gallery-view').classList.remove('hidden');
   galleryUrls.forEach(URL.revokeObjectURL); galleryUrls = [];
   const photos = (await allPhotos()).reverse();
   $('empty').classList.toggle('hidden', photos.length > 0);
@@ -138,8 +138,10 @@ function setExpanded(on) {
   $('expand-btn').setAttribute('aria-label', on ? 'Collapse photo' : 'Expand photo');
 }
 $('expand-btn').onclick = () => setExpanded(!$('detail-photo').classList.contains('expanded'));
-function openDetail(p, url) {
-  current = p;
+let detailFrom = 'gallery';
+function openDetail(p, url, from = 'gallery') {
+  current = p; detailFrom = from;
+  $('map-view').classList.add('hidden');
   $('detail-img').src = url; setExpanded(false);
   const loc = p.lat == null ? 'No location'
     : `<a target="_blank" rel="noopener" href="https://maps.google.com/?q=${p.lat},${p.lng}">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</a>`;
@@ -155,11 +157,38 @@ async function flushNote() {
   $('saved').textContent = 'Saved ✓';
 }
 $('note').addEventListener('input', () => { $('saved').innerHTML = '&nbsp;'; clearTimeout(saveTimer); saveTimer = setTimeout(flushNote, 500); });
-$('detail-back').onclick = async () => { await flushNote(); current = null; openGallery(); };
+$('detail-back').onclick = async () => { await flushNote(); current = null; detailFrom === 'map' ? openMap() : openGallery(); };
 $('detail-delete').onclick = async () => {
   if (!confirm('Delete this photo?')) return;
-  clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); openGallery();
+  clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); detailFrom === 'map' ? openMap() : openGallery();
 };
+
+let map = null, markers = [], mapUrls = [];
+async function openMap() {
+  stopCamera();
+  $('camera-view').classList.add('hidden'); $('gallery-view').classList.add('hidden'); $('detail-view').classList.add('hidden');
+  $('map-view').classList.remove('hidden');
+  const photos = await allPhotos();
+  const located = photos.filter((p) => p.lat != null);
+  $('map-info').textContent = `${located.length} of ${photos.length} located`;
+  if (!map) {
+    map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap',
+    }).addTo(map);
+  }
+  map.invalidateSize();
+  markers.forEach((m) => m.remove()); markers = [];
+  mapUrls.forEach(URL.revokeObjectURL); mapUrls = [];
+  for (const p of located) {
+    const url = URL.createObjectURL(photoBlob(p)); mapUrls.push(url);
+    const icon = L.divIcon({ className: 'pin', iconSize: [48, 48], html: `<img src="${url}" alt="">` });
+    markers.push(L.marker([p.lat, p.lng], { icon }).addTo(map).on('click', () => openDetail(p, url, 'map')));
+  }
+  if (located.length) map.fitBounds(L.latLngBounds(located.map((p) => [p.lat, p.lng])), { padding: [50, 50], maxZoom: 17 });
+}
+$('map-btn').onclick = openMap;
+$('map-back').onclick = openGallery;
 
 function closeGallery() {
   $('gallery-view').classList.add('hidden'); $('camera-view').classList.remove('hidden'); startCamera();
