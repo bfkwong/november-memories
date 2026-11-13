@@ -1,7 +1,6 @@
 // November Memories — camera + location, stored in IndexedDB (localStorage is ~5MB; photos would blow it fast).
 const $ = (id) => document.getElementById(id);
 // Look applied to the live preview AND baked into saved photos. Set to 'none' to disable.
-const PHOTO_FILTER = 'contrast(0.9) saturate(0.85) brightness(1.08)';
 const video = $('video');
 let stream = null, facing = 'environment', lastPos = null, watchId = null;
 
@@ -90,17 +89,20 @@ async function capture() {
 
   // Crop to exactly what the preview shows (the <video> is object-fit: cover), then downscale.
   const vw = video.videoWidth, vh = video.videoHeight;
-  const viewAspect = video.clientWidth / video.clientHeight;
+  const cw = video.clientWidth, ch = video.clientHeight;
   let sw = vw, sh = vh;
-  if (vw / vh > viewAspect) sw = vh * viewAspect; else sh = vw / viewAspect;
+  if (cw > 0 && ch > 0) { // preview mid-layout (e.g. rotating) -> keep the full frame
+    const viewAspect = cw / ch;
+    if (vw / vh > viewAspect) sw = vh * viewAspect; else sh = vw / viewAspect;
+  }
   const sx = (vw - sw) / 2, sy = (vh - sh) / 2;
   const scale = Math.min(1, 1280 / Math.max(sw, sh));
   const c = document.createElement('canvas');
   c.width = Math.round(sw * scale); c.height = Math.round(sh * scale);
   const g = c.getContext('2d');
-  g.filter = PHOTO_FILTER;
   g.drawImage(video, sx, sy, sw, sh, 0, 0, c.width, c.height);
   const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.5));
+  if (!blob) { alert('Could not save that photo, please try again.'); return; }
   const data = await blob.arrayBuffer();
 
   const pos = await getPosition();
@@ -255,5 +257,4 @@ document.addEventListener('visibilitychange', () => {
 });
 
 refreshThumb();
-video.style.filter = PHOTO_FILTER;
 startCamera(); // auto-open on load
