@@ -86,16 +86,11 @@ async function capture() {
   $('flash').classList.add('on'); setTimeout(() => $('flash').classList.remove('on'), 60);
   navigator.vibrate?.(30);
 
-  // Crop to exactly what the preview shows (the <video> is object-fit: cover), then downscale.
+  // Square photos: center-crop the camera frame to a square (matches the square preview), then downscale.
   const vw = video.videoWidth, vh = video.videoHeight;
-  const cw = video.clientWidth, ch = video.clientHeight;
-  let sw = vw, sh = vh;
-  if (cw > 0 && ch > 0) { // preview mid-layout (e.g. rotating) -> keep the full frame
-    const viewAspect = cw / ch;
-    if (vw / vh > viewAspect) sw = vh * viewAspect; else sh = vw / viewAspect;
-  }
+  const sw = Math.min(vw, vh), sh = sw;
   const sx = (vw - sw) / 2, sy = (vh - sh) / 2;
-  const scale = Math.min(1, 1280 / Math.max(sw, sh));
+  const scale = Math.min(1, 1280 / sw);
   const c = document.createElement('canvas');
   c.width = Math.round(sw * scale); c.height = Math.round(sh * scale);
   const g = c.getContext('2d');
