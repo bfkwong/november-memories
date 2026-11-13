@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>November Memories</title>
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <main id="camera-view">
@@ -61,6 +61,11 @@
     <p id="saved" class="saved">&nbsp;</p>
   </section>
 
-  <script src="app.js?v=7"></script>
+  <div id="lightbox" class="hidden" role="dialog" aria-label="Photo">
+    <img id="lightbox-img" alt="">
+    <button id="lightbox-close" class="round" aria-label="Close">✕</button>
+  </div>
+
+  <script src="app.js?v=8"></script>
 </body>
 </html>

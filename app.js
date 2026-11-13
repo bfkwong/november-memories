@@ -135,12 +135,13 @@ async function openGallery() {
   }
 }
 let current = null, saveTimer = null;
-function setExpanded(on) {
-  $('detail-photo').classList.toggle('expanded', on);
-  $('expand-btn').textContent = on ? '⤡' : '⤢';
-  $('expand-btn').setAttribute('aria-label', on ? 'Collapse photo' : 'Expand photo');
+function setExpanded(on) { // full-screen photo-only modal; the page behind stays put
+  $('lightbox').classList.toggle('hidden', !on);
+  if (on) $('lightbox-img').src = $('detail-img').src;
 }
-$('expand-btn').onclick = () => setExpanded(!$('detail-photo').classList.contains('expanded'));
+$('expand-btn').onclick = () => setExpanded(true);
+$('lightbox').onclick = () => setExpanded(false);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setExpanded(false); });
 let detailFrom = 'gallery';
 function openDetail(p, url, from = 'gallery') {
   current = p; detailFrom = from;
