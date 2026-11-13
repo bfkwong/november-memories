@@ -158,7 +158,7 @@ function setExpanded(on) { // full-screen photo-only modal; the page behind stay
   $('lightbox').classList.toggle('hidden', !on);
   if (on) $('lightbox-img').src = $('detail-img').src;
 }
-$('expand-btn').onclick = () => setExpanded(true);
+$('detail-img').onclick = () => setExpanded(true);
 $('lightbox').onclick = () => setExpanded(false);
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setExpanded(false); });
 let detailFrom = 'gallery';
