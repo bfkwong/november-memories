@@ -1,7 +1,7 @@
 // November Memories — camera + location, stored in IndexedDB (localStorage is ~5MB; photos would blow it fast).
 const $ = (id) => document.getElementById(id);
 // Look applied to the live preview AND baked into saved photos. Set to 'none' to disable.
-const PHOTO_FILTER = 'contrast(1.08) saturate(1.15) sepia(0.15) brightness(1.03)';
+const PHOTO_FILTER = 'contrast(0.9) saturate(0.85) brightness(1.08)';
 const video = $('video');
 let stream = null, facing = 'environment', lastPos = null, watchId = null;
 
