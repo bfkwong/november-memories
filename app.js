@@ -132,7 +132,7 @@ async function openGallery() {
     card.querySelector('.meta').append(noteEl);
     card.onclick = () => openDetail(p, url);
     const del = document.createElement('button');
-    del.className = 'card-del'; del.textContent = '✕'; del.setAttribute('aria-label', 'Delete photo');
+    del.className = 'card-del'; del.textContent = '🗑️'; del.setAttribute('aria-label', 'Delete photo');
     del.onclick = async (e) => {
       e.stopPropagation(); // don't open the photo
       await deletePhoto(p.id); card.remove(); refreshThumb();
