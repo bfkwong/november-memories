@@ -163,7 +163,7 @@ $('detail-delete').onclick = async () => {
   clearTimeout(saveTimer); await deletePhoto(current.id); current = null; refreshThumb(); detailFrom === 'map' ? openMap() : openGallery();
 };
 
-let map = null, markers = [], mapUrls = [];
+let map = null, cluster = null, mapUrls = [];
 async function openMap() {
   stopCamera();
   $('camera-view').classList.add('hidden'); $('gallery-view').classList.add('hidden'); $('detail-view').classList.add('hidden');
@@ -178,13 +178,23 @@ async function openMap() {
     }).addTo(map);
   }
   map.invalidateSize();
-  markers.forEach((m) => m.remove()); markers = [];
+  cluster?.remove();
+  cluster = L.markerClusterGroup({
+    maxClusterRadius: 50,
+    showCoverageOnHover: false,
+    iconCreateFunction: (c) => {
+      const first = c.getAllChildMarkers()[0].options.photoUrl;
+      return L.divIcon({ className: 'pin', iconSize: [52, 52],
+        html: `<div class="cluster"><img src="${first}" alt=""><b>${c.getChildCount()}</b></div>` });
+    },
+  });
   mapUrls.forEach(URL.revokeObjectURL); mapUrls = [];
   for (const p of located) {
     const url = URL.createObjectURL(photoBlob(p)); mapUrls.push(url);
     const icon = L.divIcon({ className: 'pin', iconSize: [48, 48], html: `<img src="${url}" alt="">` });
-    markers.push(L.marker([p.lat, p.lng], { icon }).addTo(map).on('click', () => openDetail(p, url, 'map')));
+    cluster.addLayer(L.marker([p.lat, p.lng], { icon, photoUrl: url }).on('click', () => openDetail(p, url, 'map')));
   }
+  map.addLayer(cluster);
   if (located.length) map.fitBounds(L.latLngBounds(located.map((p) => [p.lat, p.lng])), { padding: [50, 50], maxZoom: 17 });
 }
 $('map-btn').onclick = openMap;
