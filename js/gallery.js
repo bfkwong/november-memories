@@ -1,12 +1,12 @@
-// Gallery view ("Memories"): grid of photo cards, newest first.
+// Gallery view: grid of photo cards, newest first.
 import { $ } from 'util';
-import { allPhotos, deletePhoto, photoBlob } from 'db';
+import { allPhotos, photoBlob } from 'db';
 import { ensureLeaflet } from 'leaflet-loader';
 import * as nav from 'nav';
 
 let urls = [];
 
-function buildCard(p, url, onDelete) {
+function buildCard(p, url) {
   const note = p.note?.trim();
   const noteEl = document.createElement('div');
   noteEl.className = 'note' + (note ? '' : ' empty');
@@ -17,11 +17,6 @@ function buildCard(p, url, onDelete) {
   card.innerHTML = `<img src="${url}" alt=""><div class="meta">${new Date(p.takenAt).toLocaleString()}</div>`;
   card.querySelector('.meta').append(noteEl);
   card.onclick = () => nav.go('detail', { photo: p, url, from: 'gallery' });
-
-  const del = document.createElement('button');
-  del.className = 'card-del'; del.textContent = '🗑️'; del.setAttribute('aria-label', 'Delete photo');
-  del.onclick = (e) => { e.stopPropagation(); onDelete(card); }; // don't open the photo
-  card.append(del);
   return card;
 }
 
@@ -29,14 +24,13 @@ async function enter() {
   ensureLeaflet().catch(() => {}); // warm up the map while browsing, off the camera's critical path
   urls.forEach(URL.revokeObjectURL); urls = [];
   const photos = (await allPhotos()).reverse();
+  $('empty').classList.toggle('hidden', photos.length > 0);
   const grid = $('grid');
   grid.innerHTML = '';
-  const syncEmpty = () => $('empty').classList.toggle('hidden', grid.children.length > 0);
   for (const p of photos) {
     const url = URL.createObjectURL(photoBlob(p)); urls.push(url);
-    grid.append(buildCard(p, url, async (card) => { await deletePhoto(p.id); card.remove(); syncEmpty(); }));
+    grid.append(buildCard(p, url));
   }
-  syncEmpty();
 }
 
 export function init() {

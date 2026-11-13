@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#000000">
   <title>November Memories</title>
-  <link rel="stylesheet" href="style.css?v=25">
+  <link rel="stylesheet" href="style.css?v=26">
 </head>
 <body>
   <main id="camera-view">
@@ -31,7 +31,7 @@
   <section id="gallery-view" class="hidden">
     <header>
       <button id="back-btn" class="pill" aria-label="Camera">📷</button>
-      <h1>Memories</h1>
+      <h1>gallery</h1>
       <button id="map-btn" class="pill" aria-label="Map">🗺️</button>
     </header>
     <div id="grid"></div>
@@ -41,7 +41,7 @@
   <section id="map-view" class="hidden">
     <header>
       <button id="map-back" class="pill" aria-label="Gallery">🌆</button>
-      <h1>Map</h1>
+      <h1>map</h1>
       <span id="map-info"></span>
     </header>
     <div id="map"></div>
@@ -63,20 +63,20 @@
     <textarea id="note" rows="6" placeholder="Write a note about this photo…"></textarea>
   </section>
 
-  <!-- Bump ?v=25 on everything below when you deploy (sed -i 's/?v=25[0-9]*/?v=25NN/g' index.html) -->
+  <!-- Bump ?v=26 on everything below when you deploy (sed -i 's/?v=26[0-9]*/?v=26NN/g' index.html) -->
   <script type="importmap">
   { "imports": {
-    "util": "./js/util.js?v=25",
-    "nav": "./js/nav.js?v=25",
-    "db": "./js/db.js?v=25",
-    "geo": "./js/geo.js?v=25",
-    "camera": "./js/camera.js?v=25",
-    "leaflet-loader": "./js/leaflet-loader.js?v=25",
-    "gallery": "./js/gallery.js?v=25",
-    "detail": "./js/detail.js?v=25",
-    "map": "./js/map.js?v=25"
+    "util": "./js/util.js?v=26",
+    "nav": "./js/nav.js?v=26",
+    "db": "./js/db.js?v=26",
+    "geo": "./js/geo.js?v=26",
+    "camera": "./js/camera.js?v=26",
+    "leaflet-loader": "./js/leaflet-loader.js?v=26",
+    "gallery": "./js/gallery.js?v=26",
+    "detail": "./js/detail.js?v=26",
+    "map": "./js/map.js?v=26"
   } }
   </script>
-  <script type="module" src="./js/main.js?v=25"></script>
+  <script type="module" src="./js/main.js?v=26"></script>
 </body>
 </html>
