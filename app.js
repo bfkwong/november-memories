@@ -89,7 +89,7 @@ async function capture() {
   const c = document.createElement('canvas');
   c.width = Math.round(video.videoWidth * scale); c.height = Math.round(video.videoHeight * scale);
   c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
-  const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
+  const blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.5));
   const data = await blob.arrayBuffer();
 
   const pos = await getPosition();
