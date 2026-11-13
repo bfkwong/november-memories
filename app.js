@@ -149,18 +149,11 @@ async function openGallery() {
   }
 }
 let current = null, saveTimer = null;
-function setExpanded(on) { // full-screen photo-only modal; the page behind stays put
-  $('lightbox').classList.toggle('hidden', !on);
-  if (on) $('lightbox-img').src = $('detail-img').src;
-}
-$('detail-img').onclick = () => setExpanded(true);
-$('lightbox').onclick = () => setExpanded(false);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setExpanded(false); });
 let detailFrom = 'gallery';
 function openDetail(p, url, from = 'gallery') {
   current = p; detailFrom = from;
   $('map-view').classList.add('hidden');
-  $('detail-img').src = url; setExpanded(false);
+  $('detail-img').src = url;
   const loc = p.lat == null ? 'No location'
     : `<a target="_blank" rel="noopener" href="https://maps.google.com/?q=${p.lat},${p.lng}">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</a>`;
   $('detail-meta').innerHTML = `${new Date(p.takenAt).toLocaleString()}<br>${loc}`;
