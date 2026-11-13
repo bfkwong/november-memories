@@ -57,8 +57,7 @@ html, body { margin: 0; height: 100%; background: #000; color: #fff;
   padding-bottom: calc(24px + var(--safe-b)); }
 #detail-view header { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; justify-content: space-between;
   padding: calc(10px + var(--safe-t)) 12px 10px; pointer-events: none; } /* floats over the photo; only the buttons catch taps */
-#detail-view header .pill { pointer-events: auto; width: 34px; height: 34px; padding: 0; border-radius: 50%; font-size: 16px; line-height: 34px;
-  background: rgba(255,255,255,.5); backdrop-filter: blur(4px); } /* same size as the gallery card buttons */
+#detail-view header .pill { pointer-events: auto; background: rgba(255,255,255,.5); backdrop-filter: blur(4px); } /* default .pill size, same as the Memories view */
 #detail-view header .pill.danger { background: rgba(58,21,21,.5); }
 .pill.danger { background: #3a1515; color: #ff8a8a; }
 #detail-photo { position: relative; background: #000; }
