@@ -5,10 +5,8 @@ html, body { margin: 0; height: 100%; background: #000; color: #fff;
 .hidden { display: none !important; }
 
 #camera-view { position: fixed; inset: 0; }
-#video { position: absolute; top: calc(50% - min(100vw, 100dvh) / 2); left: calc(50% - min(100vw, 100dvh) / 2);
-  width: min(100vw, 100dvh); aspect-ratio: 1 / 1; object-fit: cover; background: #000; /* square viewfinder, centered */
-  opacity: 0; transition: opacity .15s; } /* hidden until the first real frame has painted (see camera.js) */
-#video.ready { opacity: 1; }
+#video { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: min(100vw, 100dvh); aspect-ratio: 1 / 1;
+  object-fit: cover; background: #000; } /* square viewfinder, centered */
 #camera-title { position: absolute; left: 0; right: 0; bottom: calc(50% + min(100vw, 100dvh) / 2 + 24px); margin: 0; text-align: center;
   font-size: 18px; font-weight: 500; letter-spacing: .5px; color: rgba(255,255,255,.25); pointer-events: none; } /* sits just above the square viewfinder; gray matches the shutter fill */
 #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; transition: opacity .35s; }
