@@ -1,6 +1,6 @@
 // November Memories — camera + location, stored in IndexedDB (localStorage is ~5MB; photos would blow it fast).
 const $ = (id) => document.getElementById(id);
-const video = $('video'), badge = $('gps-badge');
+const video = $('video');
 let stream = null, facing = 'environment', lastPos = null, watchId = null;
 
 /* ---------- storage (IndexedDB) ---------- */
@@ -38,15 +38,14 @@ navigator.storage?.persist?.(); // ask the browser not to evict our data
 
 /* ---------- location ---------- */
 function startLocation() {
-  if (!navigator.geolocation) return setBadge('📍 not supported', true);
+  if (!navigator.geolocation) return;
   if (watchId !== null) return;
   watchId = navigator.geolocation.watchPosition(
-    (p) => { lastPos = p; setBadge(`📍 ±${Math.round(p.coords.accuracy)}m`); },
-    (e) => setBadge(e.code === 1 ? '📍 location denied' : '📍 no location', true),
+    (p) => { lastPos = p; },
+    () => {},
     { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
   );
 }
-function setBadge(t, err) { badge.textContent = t; badge.classList.toggle('err', !!err); }
 function getPosition() {
   return new Promise((resolve) => {
     if (lastPos && Date.now() - lastPos.timestamp < 30000) return resolve(lastPos);
@@ -167,7 +166,6 @@ function closeGallery() {
 }
 
 $('shutter').onclick = capture;
-$('flip').onclick = () => { facing = facing === 'environment' ? 'user' : 'environment'; startCamera(); };
 $('gallery-btn').onclick = openGallery;
 $('back-btn').onclick = closeGallery;
 $('start-btn').onclick = startCamera;
