@@ -19,7 +19,7 @@ function showMessage(text, showBtn = true) {
 
 const streamIsLive = () => !!stream?.getTracks().some((t) => t.readyState === 'live');
 function startCamera() { return (starting ||= openCamera().finally(() => { starting = null; })); }
-function stopCamera() { stream?.getTracks().forEach((t) => t.stop()); stream = null; }
+function stopCamera() { stream?.getTracks().forEach((t) => t.stop()); stream = null; video.classList.remove('ready'); }
 
 async function openCamera() {
   stopCamera();
@@ -29,6 +29,8 @@ async function openCamera() {
     });
     video.srcObject = stream;
     await video.play().catch(() => {});
+    await whenFramePainted();
+    video.classList.add('ready');
     $('message').classList.add('hidden');
     startLocation();
   } catch (e) {
@@ -37,6 +39,16 @@ async function openCamera() {
       : !window.isSecureContext ? 'Camera needs HTTPS (or localhost).'
       : 'Could not open the camera: ' + e.message);
   }
+}
+
+// Resolve once the video has painted a real frame and layout/object-fit have settled, so we never show the
+// first half-initialised frames (letterboxed or mid-exposure). Falls back to a timeout so the preview can't stay hidden.
+function whenFramePainted() {
+  return new Promise((resolve) => {
+    const done = () => requestAnimationFrame(() => requestAnimationFrame(resolve));
+    setTimeout(resolve, 600);
+    if (video.requestVideoFrameCallback) video.requestVideoFrameCallback(done); else done();
+  });
 }
 
 // Center-crop the current frame to a square (matches the square preview), downscale, encode as JPEG bytes.
